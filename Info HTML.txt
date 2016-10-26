@@ -16,4 +16,6 @@ document.getElementById('my_selection').onchange = function() {
 Idée : Faire une liste déroulante HTML avec la balise <select  ></select> 
 et changer l'URL avec href pour récupérer le choix réalisé
 
-lien : https://openclassrooms.com/courses/apprenez-a-creer-votre-site-web-avec-html5-et-css3/les-formulaires-8
+liens : 
+https://openclassrooms.com/courses/apprenez-a-creer-votre-site-web-avec-html5-et-css3/les-formulaires-8
+http://randomnerdtutorials.com/esp8266-web-server-with-arduino-ide/
