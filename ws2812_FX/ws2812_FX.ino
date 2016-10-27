@@ -4,11 +4,22 @@
 //
 // Test ok 1/08/16
 // Version serveur Web
+//
+//To do list : 
+//            -si wifi indisponible, l'ESP doit créer un wifi pour donner la possibilité à l'utilisateur de se connecter et de reconfigurer les paramètres wifi de la box
+//            -faire clignoter certaines LEDs pour indiquer l'adresse IP de la lampe ou seulement le dernier nombre
+//            -
+//            -
 // 
 // Compilateur version 1.6.10
 //----------------------------------------------------------
 
 #include <WS2812FX.h>
+#include <ESP8266WiFi.h>
+
+//Identifiants du WiFi de la maison
+const char* ssid     = "your-ssid";
+const char* password = "your-password";
 
 //Nombre de WS2812
 #define LED_COUNT 78
@@ -31,7 +42,15 @@ void setup() {
   ws2812fx.setBrightness(25);
 // Réglage de la vitesse des effets  
   ws2812fx.setSpeed(500);
-//Un arc en cile glissant  
+// Connexion à la box WiFi
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(100);
+    //------------------REALISER UN AFFICHAGE LED PARTICULIER EN ATTENDANT D'ETRE CONNECTE AU WIFI--------------------------
+  }
+  //--------------------REALISER UN AFFICHAGE LED PARTICULIER POUR INFORMER LA CONNEION AU WIFI-----------------------------
+//Un arc en ciel glissant  
   ws2812fx.setColor(255, 255, 0);
   ws2812fx.setMode(FX_MODE_CHASE_RAINBOW);
 // Demarrage  
