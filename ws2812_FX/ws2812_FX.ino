@@ -18,8 +18,8 @@
 #include <ESP8266WiFi.h>
 
 //Identifiants du WiFi de la maison
-const char* ssid     = "your-ssid";
-const char* password = "your-password";
+const char* ssid     = "Led_RGB_wifi";
+const char* password = "tours2016";
 
 //Nombre de WS2812
 #define LED_COUNT 78
