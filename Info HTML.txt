@@ -1,4 +1,11 @@
-<!DOCTYPE html> <head> <title></title> </head><body> <select id="menu" name="links"> size="1" onchange="window.location.href=this.value;"> <option> value="URL">Book</option> <option value="URL">Pen</option> <option> value="URL">Read</option> <option value="URL">Apple</option> </select>
+﻿<!DOCTYPE html> <head> <title></title> </head>
+<body> 
+<select id="menu" name="links"> size="1" onchange="window.location.href=this.value;"> 
+	<option> value="URL">Book</option> 
+	<option value="URL">Pen</option> 
+	<option> value="URL">Read</option> 
+	<option value="URL">Apple</option> 
+</select>
 </body> </html>*
 
 <select id="my_selection">
@@ -12,6 +19,21 @@ document.getElementById('my_selection').onchange = function() {
 }
 </script>
 
+CA MARCHE :
+
+
+<select name="formal" onchange="javascript:handleSelect(this)">
+<option value="home">Home</option>
+<option value="contact">Contact</option>
+</select>
+
+<script type="text/javascript">
+function handleSelect(elm)
+{
+window.location = elm.value+".php";
+}
+</script>
+
 
 Idée : Faire une liste déroulante HTML avec la balise <select  ></select> 
 et changer l'URL avec href pour récupérer le choix réalisé
@@ -19,3 +41,4 @@ et changer l'URL avec href pour récupérer le choix réalisé
 liens : 
 https://openclassrooms.com/courses/apprenez-a-creer-votre-site-web-avec-html5-et-css3/les-formulaires-8
 http://randomnerdtutorials.com/esp8266-web-server-with-arduino-ide/
+https://www.kzenjoy.net/2015/un-capteur-de-temperature-wifi-avec-un-esp8266-et-jeedom/

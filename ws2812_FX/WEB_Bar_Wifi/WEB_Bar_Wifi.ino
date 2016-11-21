@@ -17,6 +17,9 @@ const char *password = "Tours2016";
 
 ESP8266WebServer server(80);
 
+//chaine de caractère contenant la page HTML
+String web_page = "";
+
 //Nombre de WS2812
 #define LED_COUNT 78
 // Pin sortie données
@@ -31,7 +34,26 @@ const long interval = 10000;
 int effet = -1;
 
 void handleRoot() {
-  server.send(200, "text/html", "<h1>You are connected</h1>");
+  web_page = "<h1>Commande de la bar LED</h1>";
+  web_page += " <p>";
+  web_page += "     <select name=\"formal\" onchange=\"javascript:handleSelect(this)\">";
+  web_page += "         <option >Choix de la luminosité</option>";
+  web_page += "         <option value=\"Val0\">0%</option>";
+  web_page += "         <option value=\"Val1\">25%</option>";
+  web_page += "         <option value=\"Val2\">50%</option>";
+  web_page += "         <option value=\"Val3\">75%</option>";
+  web_page += "         <option value=\"Val4\">100%</option>";
+  web_page += "     </select>";
+  web_page += " </p>";
+  web_page += "<script type=\"text/javascript\">";
+  web_page += "function handleSelect(elm)";
+  web_page += "{";
+  web_page += "window.location = elm.value;";
+  web_page += "}";
+  web_page += "</script>";
+  web_page += "<h1>ESP8266 Web Server</h1><p>Socket #1 <a href=\"Test1\"><button>ON</button></a>&nbsp;<a href=\"Test2\"><button>OFF</button></a></p>";
+
+  server.send(200, "text/html", web_page);
 }
 
 //Configuration
@@ -50,9 +72,33 @@ void setup() {
   Serial.begin(115200);
 
   WiFi.softAP(ssid, password);
-
+//lancement de la page web
   server.on("/", handleRoot);
+
+  server.on("/Val0", [](){
+    server.send(200, "text/html", web_page);
+    ws2812fx.setBrightness(0);
+  });
+  server.on("/Val1", [](){
+    server.send(200, "text/html", web_page);
+    ws2812fx.setBrightness(64);
+  });
+  server.on("/Val2", [](){
+    server.send(200, "text/html", web_page);
+    ws2812fx.setBrightness(128);
+  });
+  server.on("/Val3", [](){
+    server.send(200, "text/html", web_page);
+    ws2812fx.setBrightness(192);
+  });
+  server.on("/Val4", [](){
+    server.send(200, "text/html", web_page);
+    ws2812fx.setBrightness(255);
+  });
+
+  
   server.begin();
+  Serial.println("Serveur accessible");
 }
 
 void loop() {
