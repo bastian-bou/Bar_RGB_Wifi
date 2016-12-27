@@ -1,8 +1,11 @@
 //----------------------------------------------------------
 //
 // Gestion barre à leds multicolore
-//
-// Test ok 1/08/16
+// 
+// Test ok 27/12/16
+// Test réglage lumin OK
+// 
+// 
 // 
 // Compilateur version 1.6.10
 //----------------------------------------------------------
@@ -15,6 +18,9 @@
 const char *ssid = "Led_RGB";
 const char *password = "Tours2016";
 
+//flag pour le choix d'effet
+bool flag_effet = true;
+
 ESP8266WebServer server(80);
 
 //chaine de caractère contenant la page HTML
@@ -23,7 +29,7 @@ String web_page = "";
 //Nombre de WS2812
 #define LED_COUNT 78
 // Pin sortie données
-#define LED_PIN 0
+#define LED_PIN 2
 
 //Instanciation de l'objet représentant le ruban
 WS2812FX ws2812fx = WS2812FX(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
@@ -33,34 +39,60 @@ const long interval = 10000;
 
 int effet = -1;
 
-void lum_led(){
-  int lum = server.arg("state").toInt();
+// fonction des parametres de la page web HTML
+void parametres(){
+  //recuperation des arguments = parametres
+  int lum = server.arg("Lum").toInt();
+  int effet = server.arg("effet").toInt();
+
+  //parametre de luminosite
   ws2812fx.setBrightness(lum);
-  Serial.println("Lum = ");
-  Serial.print(lum);
+  Serial.print("WEB - Lum = ");
+  Serial.println(lum);
+
+  //parametre de choix d'effet
+  if(effet == 100){ //mode demo
+    flag_effet = true;
+    Serial.println("WEB - effet = demo");
+  }
+  else if(effet > 44){ //depassement nb effet
+    ws2812fx.setMode(44);
+    Serial.println ("WEB - error = mode 44");
+  }
+  else{ // choix effet
+    flag_effet = false;
+    ws2812fx.setMode(effet);
+    Serial.print("WEB - effet = ");
+    Serial.println(effet);
+  }
+
+  //renvoi de la page HTML
   server.send(200, "text/html", web_page);
 }
 
 
+//fonction page HTML
 void handleRoot() {
-//  web_page = "HTTP/1.1 200 OK";
   web_page = "Content-Type: text/html;charset=UTF-8";
   web_page = "<HTML>\n<HEAD>";
   web_page = "</HEAD><BODY>";
-  web_page = "<h1>Commande de la bar LED</h1>";
+  web_page = "<h1>Commande guirlande RGB de Camille</h1>";
   web_page += " <p>";
-  web_page += "<form action=\"/led\" method=get>";
+  web_page += " <h2>Choix de la luminosite</h2>";
+  web_page += " <form action=\"/led\" method=get>";
   web_page += "     <select name=\"Lum\">";
-  web_page += "         <option >Choix de la luminosité</option>";
   web_page += "         <option value=\"0\">0%</option>";
-  web_page += "         <option value=\"64\">25%</option>";
-  web_page += "         <option value=\"50\">50%</option>";
-  web_page += "         <option value=\"127\">75%</option>";
+  web_page += "         <option selected value=\"64\">25%</option>"; // valeur par defaut
+  web_page += "         <option value=\"127\">50%</option>";
+  web_page += "         <option value=\"191\">75%</option>";
   web_page += "         <option value=\"255\">100%</option>";
   web_page += "     </select>";
   web_page += " </p>";
+  web_page += " <p>";
+  web_page += " <h2>Choix de l'effet (100 = demo, max = 44)</h2>";
+  web_page += " <input type=\"number\" name=\"effet\" maxlength=\"3\" size=\"6\" /><br />";
+  web_page += " </p>";
   web_page += "<br><input type=\"submit\" value=\"Envoi\" /></form>";
-  web_page += "<h1>ESP8266 Web Server</h1><p>Socket #1 <a href=\"Test1\"><button>ON</button></a>&nbsp;<a href=\"Test2\"><button>OFF</button></a></p>";
   web_page += "</BODY></HTML>";
 
   server.send(200, "text/html", web_page);
@@ -84,8 +116,8 @@ void setup() {
   WiFi.softAP(ssid, password);
 //lancement de la page web
   server.on("/", handleRoot);
-
-  server.on("/led", lum_led);
+//detection des parametres
+  server.on("/led", parametres);
 
   
   server.begin();
@@ -98,15 +130,16 @@ void loop() {
   
 //Rafraichissement de l'animation  
   ws2812fx.service();
-
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    ws2812fx.stop();
-    effet++;
-    if(effet >= MODE_COUNT) effet = 0;
-    Serial.println(ws2812fx.getModeName(effet));
-    ws2812fx.setMode(effet);
-    ws2812fx.start();
-    previousMillis = currentMillis;
+  if(flag_effet){
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= interval) {
+      ws2812fx.stop();
+      effet++;
+      if(effet >= MODE_COUNT) effet = 0;
+      Serial.println(ws2812fx.getModeName(effet));
+      ws2812fx.setMode(effet);
+      ws2812fx.start();
+      previousMillis = currentMillis;
+    }
   }
 }
